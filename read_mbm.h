@@ -5,9 +5,7 @@ EXAMPLE HOW TO USE:
 
     int main() {
         std::vector <std::vector <bool>> board;
-        bool DEBUG_MODE = false;
-
-        caricaMBM("file_name", board, DEBUG_MODE);
+        readMBM("file name", board);
     }
 */
 /*
@@ -24,102 +22,110 @@ HOW DOES THIS WORK?
     - it fills the map with the data
 */
 
-#ifndef CARICACAMPOMBM_H
-#define CARICACAMPOMBM_H
+#ifndef READMBM_H
+#define READMBM_H
+
+
 
 #include <cmath>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-inline bool DEBUG = 0;
 
-struct Dim {
-    size_t x;
-    size_t y;
+struct Data {
+    std::string name;
+    unsigned short int columns;
+    unsigned short int rows;
+    std::vector<bool> array;
+
+    Data(std::string filename) {
+        name = filename + ".mbm";
+        columns = 0;
+        rows = 0;
+    }
 };
-inline Dim dim = { 0, 0 };
 
 
-void salvaContenuto(std::string nome_file, std::vector<bool> &stringa) {
+void copyData(Data &data) {
 
-    std::ifstream file(nome_file, std::ios::binary);
+    std::ifstream file(data.name, std::ios::binary);
     if (!file) return;
 
-    dim = { 0, 0 };
-    char byte;
-    bool primo = true;
-    bool secondo = true;
 
-    while (file.read(&byte, 1)) {
+    uint8_t byte;
+    file.read(reinterpret_cast<char *>(&byte), 1);
+    data.columns = byte;
+
+    file.read(reinterpret_cast<char *>(&byte), 1);
+    data.rows = byte;
+
+    while (file.read(reinterpret_cast<char *>(&byte), 1)) {
         for (int i = 7; i >= 0; i--) {
-
-            bool bit = (byte >> i) & 1;
-
-            if (primo) dim.x += pow(2, i) * bit;
-            else if (secondo) dim.y += pow(2, i) * bit;
-            else stringa.push_back(bit);
+            data.array.push_back((byte >> i) & 1);
         }
-
-        if (!primo) secondo = false;
-        primo = false;
     }
+
 
     file.close();
 }
 
-void organizzaCampo(std::vector<bool> &stringa, std::vector<std::vector<bool>> &muri) {
+void storeData(std::vector<std::vector<bool>> &board, Data &data) {
 
-    muri.resize(dim.y);
+    board.resize(data.rows);
 
-    for (size_t i = 0; i < muri.size(); i++)
-        muri[i].resize(dim.x);
+    for (size_t i = 0; i < board.size(); i++) {
+        board[i].resize(data.columns);
+    }
 
-    for (size_t i = 0; i < stringa.size(); i++) {
 
-        if (i >= dim.y * dim.x) break;
+    for (size_t i = 0; i < data.array.size(); i++) {
 
-        size_t y = i / dim.x;
-        size_t x = i % dim.x;
+        if (i >= data.rows * data.columns) break;
 
-        muri[y][x] = stringa[i];
+        size_t y = i / data.columns;
+        size_t x = i % data.rows;
+
+        board[y][x] = data.array[i];
     }
 }
 
-void stampaLog(std::string nome_file, std::vector<bool> stringa, std::vector<std::vector<bool>> muri) {
+void readMBM(std::string filename, std::vector<std::vector<bool>> &board) {
+    Data data(filename);
+    copyData(data);
+    storeData(board, data);
+}
 
-    std::cout << "\nDEBUG MODE ON \n";
+void readMBMLog(std::string filename, std::vector<std::vector<bool>> &board) {
 
-    std::cout << "\nnome file: " << nome_file;
+    Data data(filename);
+    copyData(data);
+    storeData(board, data);
 
-    std::cout << "\nbytes: ";
-    for (size_t i = 0; i < stringa.size(); i++) {
+
+    std::cout << "\nfile name: " << data.name << "\nn columns: " << data.columns << "\nn rows: " << data.rows;
+
+
+    std::cout << "\nraw bytes: ";
+
+    for (size_t i = 0; i < data.array.size(); i++) {
         if (i % 8 == 0) std::cout << "\n\t";
-        std::cout << stringa[i];
+        std::cout << data.array[i];
     }
 
-    std::cout << "\nn bit x riga: " << dim.x;
-    std::cout << "\nn righe: " << dim.y;
 
-    std::cout << "\nmappa effettiva: ";
-    for (size_t y = 0; y < muri.size(); y++) {
+    std::cout << "\nresulting map: ";
+
+    for (size_t y = 0; y < board.size(); y++) {
         std::cout << "\n\t";
 
-        for (size_t x = 0; x < muri[0].size(); x++)
-            std::cout << muri[y][x];
+        for (size_t x = 0; x < board[0].size(); x++) {
+            std::cout << board[y][x];
+        }
     }
 }
 
-void caricaMBM(std::string nome_file, std::vector<std::vector<bool>> &muri, const bool DEBUG_MODE) {
 
-    DEBUG = DEBUG_MODE;
-    nome_file.append(".mbm");
-
-    std::vector<bool> stringa;
-    salvaContenuto(nome_file, stringa);
-    organizzaCampo(stringa, muri);
-
-    if (DEBUG) stampaLog(nome_file, stringa, muri);
-}
 
 #endif
