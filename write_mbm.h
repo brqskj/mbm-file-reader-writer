@@ -7,7 +7,7 @@ EXAMPLE HOW TO USE:
     int main() {
         std::vector<std::vector<bool>> board;
         // edit map here
-        saveMBM("file name", board);
+        writeMBM("file name", board);
     }
 */
 /*
@@ -78,7 +78,7 @@ void fill(std::ofstream &file, std::vector<std::vector<bool>> &board) {
     if (i > 0) file.write(reinterpret_cast<char *>(&byte), 1);
 }
 
-void saveMBM(std::string FILE_NAME, std::vector<std::vector<bool>> &board) {
+void writeMBM(std::string FILE_NAME, std::vector<std::vector<bool>> &board) {
 
     std::string filename = FILE_NAME + ".mbm";
     std::ofstream file(filename, std::ios::binary);
