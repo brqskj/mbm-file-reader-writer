@@ -1,7 +1,6 @@
 /*
-EXAMPLE HOW TO USE:
-
-    #include "read_mbm.h"
+HOW TO USE:
+    #include "read_mbm.hpp"
 
     int main() {
         std::vector <std::vector <bool>> board;
