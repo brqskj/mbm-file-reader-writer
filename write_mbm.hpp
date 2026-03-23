@@ -1,7 +1,6 @@
 /*
-EXAMPLE HOW TO USE:
-
-    #include "write_mbm.h"
+HOW TO USE:
+    #include "write_mbm.hpp"
     #include <vector>
 
     int main() {
@@ -16,13 +15,6 @@ NOTES:
     - you MUST edit the content of the map or it'll fail
     - id recommand using the graphic funcions to edi the map
 */
-/*
-HOW DOES THIS WORK?
-    - it creates a file with a generation name
-    - writes the dimensions
-    - writes the data
-*/
-
 
 #ifndef WRITEMBM_H
 #define WRITEMBM_H
@@ -57,7 +49,7 @@ void fill(std::ofstream &file, std::vector<std::vector<bool>> &board) {
     file.write(reinterpret_cast<char *>(&righe), 1);
 
 
-    // dill w data
+    // fill with data
     uint8_t byte = 0;
     size_t i = 0;
 
