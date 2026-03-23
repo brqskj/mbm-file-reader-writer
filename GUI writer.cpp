@@ -14,7 +14,7 @@ HOW DOES THIS WORK?
 */
 
 #include "raylib.h"
-#include "write_mbm.h"
+#include "write_mbm.hpp"
 
 
 Vector2 cellsize;
@@ -39,7 +39,7 @@ void input(std::vector<std::vector<bool>> &board) {
 
     // save file
     if (IsKeyPressed(KEY_ENTER)) {
-        saveMBM(std::to_string(gen), board);
+        writeMBM(std::to_string(gen), board);
         gen++;
     }
 }
