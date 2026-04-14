@@ -1,0 +1,8 @@
+HOW .mbm WORKS:
+- the first 2 bytes are INT numbers translated into binary
+    - the first one is the number of bits per row (columns)
+    - the second one is the number of rows
+- all the other bytes represent the map
+    - 1 = wall, 0 = no wall
+    - they're a single string split into bytes for convenience
+    - 1 byte is not necessarily one row
